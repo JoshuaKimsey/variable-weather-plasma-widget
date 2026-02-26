@@ -27,9 +27,18 @@ A feature-rich weather widget for KDE Plasma 6, powered by [Open-Meteo](https://
 
 ## Installation
 
-### From .plasmoid file
+### From the desktop (easiest)
 
-1. Download the latest `variable-weather.plasmoid` from the [Releases](https://github.com/JoshuaKimsey/variable-weather/releases) page
+1. Download the latest `variable-weather.plasmoid` from the [Releases](https://github.com/JoshuaKimsey/variable-weather-plasma-widget/releases) page
+2. Right-click your desktop and select **Enter Edit Mode**
+3. Click **Add Widgets** and then **Get New Widgets...** at the bottom of the widget sidebar
+4. Select **Install Widget From Local File...**
+5. Navigate to the downloaded `variable-weather.plasmoid` file and open it
+6. Search for "Variable Weather" in the widget list and add it to your panel or desktop
+
+### From .plasmoid file (command line)
+
+1. Download the latest `variable-weather.plasmoid` from the [Releases](https://github.com/JoshuaKimsey/variable-weather-plasma-widget/releases) page
 2. Install with:
    ```bash
    kpackagetool6 -t Plasma/Applet -i variable-weather.plasmoid
@@ -39,8 +48,8 @@ A feature-rich weather widget for KDE Plasma 6, powered by [Open-Meteo](https://
 ### From source
 
 ```bash
-git clone https://github.com/JoshuaKimsey/variable-weather.git
-cd variable-weather
+git clone https://github.com/JoshuaKimsey/variable-weather-plasma-widget.git
+cd variable-weather-plasma-widget
 ./install.sh
 ```
 
