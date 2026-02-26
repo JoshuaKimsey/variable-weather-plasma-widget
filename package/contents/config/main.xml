@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="latitude" type="String">
+            <default></default>
+        </entry>
+        <entry name="longitude" type="String">
+            <default></default>
+        </entry>
+        <entry name="locationName" type="String">
+            <default></default>
+        </entry>
+        <entry name="pirateWeatherApiKey" type="String">
+            <default></default>
+        </entry>
+        <entry name="refreshPeriod" type="Int">
+            <default>15</default>
+        </entry>
+        <entry name="units" type="String">
+            <default>auto</default>
+        </entry>
+        <entry name="usePirateWeatherAlerts" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="pressureInMillibar" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="savedLocations" type="String">
+            <default>[]</default>
+        </entry>
+    </group>
+</kcfg>

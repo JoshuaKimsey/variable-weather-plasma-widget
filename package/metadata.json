@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Id": "com.github.JoshuaKimsey.variableweather",
+        "Name": "Variable Weather",
+        "Description": "A weather widget powered by Open-Meteo and Pirate Weather",
+        "Icon": "weather-few-clouds",
+        "Authors": [
+            {
+                "Name": "Joshua Kimsey",
+                "Email": "jkimsey@proton.me"
+            }
+        ],
+        "Category": "Environment and Weather",
+        "License": "BSD-3-Clause",
+        "Website": "https://github.com/JoshuaKimsey/variable-weather"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
