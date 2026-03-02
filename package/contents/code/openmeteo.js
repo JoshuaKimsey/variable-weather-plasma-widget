@@ -28,7 +28,7 @@ function fetchWeather(lat, lon, callback) {
         + "&hourly=" + hourlyParams.join(",")
         + "&daily=" + dailyParams.join(",")
         + "&timezone=auto"
-        + "&forecast_days=5"
+        + "&forecast_days=6"
         + "&forecast_hours=12";
 
     var xhr = new XMLHttpRequest();
@@ -88,7 +88,7 @@ function parseWeatherData(data) {
 
     var daily = [];
     if (data.daily && data.daily.time) {
-        var dayCount = Math.min(data.daily.time.length, 5);
+        var dayCount = Math.min(data.daily.time.length, 6);
         for (var j = 0; j < dayCount; j++) {
             daily.push({
                 time: data.daily.time[j],

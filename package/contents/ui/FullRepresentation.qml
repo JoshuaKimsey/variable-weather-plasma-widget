@@ -175,7 +175,8 @@ PlasmaExtras.Representation {
         QQC2.ScrollBar.horizontal.policy: QQC2.ScrollBar.AlwaysOff
 
         ColumnLayout {
-            width: parent.width
+            width: parent.width - Kirigami.Units.smallSpacing * 2
+            x: Kirigami.Units.smallSpacing
             spacing: Kirigami.Units.mediumSpacing
 
             // Stale data indicator
@@ -222,10 +223,93 @@ PlasmaExtras.Representation {
 
             // Weather Details
             Components.WeatherDetails {
+                id: weatherDetails
                 Layout.fillWidth: true
                 weatherData: root.weatherData
                 useMetric: root.useMetric
                 pressureInMillibar: plasmoid.configuration.pressureInMillibar
+            }
+
+            // Today's forecast row (matches 5-day forecast row design)
+            RowLayout {
+                id: todayRow
+                Layout.fillWidth: true
+                visible: root.weatherData && root.weatherData.daily && root.weatherData.daily.length > 0
+                spacing: Kirigami.Units.smallSpacing
+
+                readonly property var today: (root.weatherData && root.weatherData.daily && root.weatherData.daily.length > 0)
+                    ? root.weatherData.daily[0] : null
+
+                PlasmaComponents.Label {
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 3
+                    text: i18n("Today")
+                    font.weight: Font.DemiBold
+                }
+
+                Image {
+                    source: todayRow.today ? root.iconPath(todayRow.today.icon) : ""
+                    Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                    Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize: Qt.size(Kirigami.Units.iconSizes.small, Kirigami.Units.iconSizes.small)
+                }
+
+                PlasmaComponents.Label {
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 2
+                    text: todayRow.today && todayRow.today.precipProbability > 0 ? todayRow.today.precipProbability + "%" : ""
+                    font: Kirigami.Theme.smallFont
+                    color: Kirigami.Theme.linkColor
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                PlasmaComponents.Label {
+                    text: todayRow.today ? Units.formatTemp(todayRow.today.tempMin, root.useMetric) : ""
+                    font.weight: Font.DemiBold
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 2.5
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 6
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 3
+                        color: Kirigami.Theme.textColor
+                        opacity: 0.15
+                    }
+
+                    Rectangle {
+                        id: todayTempBar
+                        x: parent.width * (todayRow.today.tempMin - dailyForecast.globalMin) / dailyForecast.globalRange
+                        width: Math.max(6, parent.width * (todayRow.today.tempMax - todayRow.today.tempMin) / dailyForecast.globalRange)
+                        height: parent.height
+                        radius: 3
+                        visible: todayRow.today !== null && dailyForecast.globalRange > 0
+
+                        readonly property real globalStartFrac: (todayRow.today.tempMin - dailyForecast.globalMin) / dailyForecast.globalRange
+                        readonly property real globalEndFrac: (todayRow.today.tempMax - dailyForecast.globalMin) / dailyForecast.globalRange
+
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0.0; color: dailyForecast.tempColor(todayTempBar.globalStartFrac) }
+                            GradientStop { position: 0.5; color: dailyForecast.tempColor((todayTempBar.globalStartFrac + todayTempBar.globalEndFrac) / 2) }
+                            GradientStop { position: 1.0; color: dailyForecast.tempColor(todayTempBar.globalEndFrac) }
+                        }
+                    }
+                }
+
+                PlasmaComponents.Label {
+                    text: todayRow.today ? Units.formatTemp(todayRow.today.tempMax, root.useMetric) : ""
+                    font.weight: Font.DemiBold
+                    Layout.preferredWidth: Kirigami.Units.gridUnit * 2.5
+                }
+            }
+
+            Kirigami.Separator {
+                Layout.fillWidth: true
+                visible: todayRow.visible
             }
 
             // Hourly Forecast
@@ -233,6 +317,10 @@ PlasmaExtras.Representation {
                 Layout.fillWidth: true
                 hourlyData: root.weatherData ? root.weatherData.hourly : []
                 useMetric: root.useMetric
+            }
+
+            Kirigami.Separator {
+                Layout.fillWidth: true
             }
 
             // Nowcast Chart
@@ -243,8 +331,13 @@ PlasmaExtras.Representation {
                 visible: root.nowcastData && root.nowcastData.data && root.nowcastData.data.length > 0
             }
 
+            Kirigami.Separator {
+                Layout.fillWidth: true
+            }
+
             // Daily Forecast
             Components.DailyForecast {
+                id: dailyForecast
                 Layout.fillWidth: true
                 dailyData: root.weatherData ? root.weatherData.daily : []
                 useMetric: root.useMetric

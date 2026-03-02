@@ -12,6 +12,7 @@ Item {
     property bool pressureInMillibar: true
 
     readonly property var current: weatherData ? weatherData.current : null
+    readonly property real detailsWidth: detailsGrid.implicitWidth
 
     implicitHeight: detailsGrid.implicitHeight
 
@@ -20,7 +21,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         columns: 3
         rowSpacing: Kirigami.Units.smallSpacing
-        columnSpacing: Kirigami.Units.largeSpacing
+        columnSpacing: Kirigami.Units.gridUnit * 1.5
 
         DetailItem {
             label: i18n("Humidity")

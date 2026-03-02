@@ -10,7 +10,13 @@ ColumnLayout {
     property var dailyData: []
     property bool useMetric: true
 
-    // Compute global min/max once for all rows
+    // Future days only (skip today at index 0)
+    readonly property var futureDays: {
+        if (!dailyData || dailyData.length <= 1) return [];
+        return dailyData.slice(1);
+    }
+
+    // Compute global min/max across ALL days (including today) for consistent coloring
     readonly property real globalMin: {
         var m = 100;
         for (var i = 0; i < dailyData.length; i++) {
@@ -27,6 +33,27 @@ ColumnLayout {
     }
     readonly property real globalRange: globalMax - globalMin > 0 ? globalMax - globalMin : 1
 
+    // Expose tempColor so the today bar in FullRepresentation can use the same spectrum
+    function tempColor(globalFrac) {
+        var t = Math.max(0, Math.min(1, globalFrac));
+        if (t < 0.33) {
+            var f = t / 0.33;
+            return Qt.rgba(0.259 + f * (0.400 - 0.259),
+                           0.647 + f * (0.733 - 0.647),
+                           0.961 + f * (0.416 - 0.961), 1);
+        } else if (t < 0.67) {
+            var f2 = (t - 0.33) / 0.34;
+            return Qt.rgba(0.400 + f2 * (1.000 - 0.400),
+                           0.733 + f2 * (0.596 - 0.733),
+                           0.416 + f2 * (0.000 - 0.416), 1);
+        } else {
+            var f3 = (t - 0.67) / 0.33;
+            return Qt.rgba(1.000,
+                           0.596 + f3 * (0.439 - 0.596),
+                           0.000 + f3 * (0.263 - 0.000), 1);
+        }
+    }
+
     spacing: Kirigami.Units.smallSpacing
 
     PlasmaComponents.Label {
@@ -36,7 +63,7 @@ ColumnLayout {
     }
 
     Repeater {
-        model: dailyRoot.dailyData
+        model: dailyRoot.futureDays
 
         RowLayout {
             required property var modelData
@@ -50,10 +77,8 @@ ColumnLayout {
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 3
                 text: {
                     if (!modelData || !modelData.time) return "";
-                    if (index === 0) return i18n("Today");
                     return Qt.formatDate(new Date(modelData.time), "ddd");
                 }
-                font.weight: index === 0 ? Font.DemiBold : Font.Normal
             }
 
             // Weather icon
@@ -77,8 +102,7 @@ ColumnLayout {
             // Low temp
             PlasmaComponents.Label {
                 text: modelData ? Units.formatTemp(modelData.tempMin, dailyRoot.useMetric) : ""
-                font: Kirigami.Theme.smallFont
-                opacity: 0.7
+                font.weight: Font.DemiBold
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 2.5
                 horizontalAlignment: Text.AlignRight
             }
@@ -104,41 +128,14 @@ ColumnLayout {
                     height: parent.height
                     radius: 3
 
-                    // Where this bar's min/max fall in the global 0-1 range
                     readonly property real globalStartFrac: (modelData.tempMin - dailyRoot.globalMin) / dailyRoot.globalRange
                     readonly property real globalEndFrac: (modelData.tempMax - dailyRoot.globalMin) / dailyRoot.globalRange
-                    readonly property real barSpan: globalEndFrac - globalStartFrac
-
-                    // Color spectrum: cold(0) → cool(0.33) → warm(0.67) → hot(1)
-                    function tempColor(globalFrac) {
-                        // Clamp to [0,1]
-                        var t = Math.max(0, Math.min(1, globalFrac));
-                        if (t < 0.33) {
-                            // Blue (#42a5f5) → Green (#66bb6a)
-                            var f = t / 0.33;
-                            return Qt.rgba(0.259 + f * (0.400 - 0.259),
-                                           0.647 + f * (0.733 - 0.647),
-                                           0.961 + f * (0.416 - 0.961), 1);
-                        } else if (t < 0.67) {
-                            // Green (#66bb6a) → Orange (#ff9800)
-                            var f2 = (t - 0.33) / 0.34;
-                            return Qt.rgba(0.400 + f2 * (1.000 - 0.400),
-                                           0.733 + f2 * (0.596 - 0.733),
-                                           0.416 + f2 * (0.000 - 0.416), 1);
-                        } else {
-                            // Orange (#ff9800) → Red (#ff7043)
-                            var f3 = (t - 0.67) / 0.33;
-                            return Qt.rgba(1.000,
-                                           0.596 + f3 * (0.439 - 0.596),
-                                           0.000 + f3 * (0.263 - 0.000), 1);
-                        }
-                    }
 
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: tempBar.tempColor(tempBar.globalStartFrac) }
-                        GradientStop { position: 0.5; color: tempBar.tempColor((tempBar.globalStartFrac + tempBar.globalEndFrac) / 2) }
-                        GradientStop { position: 1.0; color: tempBar.tempColor(tempBar.globalEndFrac) }
+                        GradientStop { position: 0.0; color: dailyRoot.tempColor(tempBar.globalStartFrac) }
+                        GradientStop { position: 0.5; color: dailyRoot.tempColor((tempBar.globalStartFrac + tempBar.globalEndFrac) / 2) }
+                        GradientStop { position: 1.0; color: dailyRoot.tempColor(tempBar.globalEndFrac) }
                     }
                 }
             }
