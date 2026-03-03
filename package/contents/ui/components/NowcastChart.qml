@@ -179,6 +179,7 @@ ColumnLayout {
 
                         // Bar
                         Rectangle {
+                            visible: (modelData.precipProbability || 0) > 0 || (modelData.precipIntensity || 0) > 0
                             anchors.bottom: parent.bottom
                             x: barDelegate.isSourceBoundary ? 8 : 0
                             width: parent.width - (barDelegate.isSourceBoundary ? 9 : 1)
