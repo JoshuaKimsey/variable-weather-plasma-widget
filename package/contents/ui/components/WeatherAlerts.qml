@@ -24,6 +24,7 @@ ColumnLayout {
             Layout.fillWidth: true
             implicitHeight: alertContent.implicitHeight + Kirigami.Units.smallSpacing * 2
             radius: Kirigami.Units.cornerRadius
+            clip: true
 
             color: {
                 switch (modelData.severity) {
@@ -37,7 +38,9 @@ ColumnLayout {
 
             ColumnLayout {
                 id: alertContent
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
                 anchors.margins: Kirigami.Units.smallSpacing
 
                 RowLayout {
@@ -77,8 +80,10 @@ ColumnLayout {
                 }
 
                 PlasmaComponents.Label {
+                    Layout.fillWidth: true
                     visible: alertBanner.expanded && modelData.expires
                     text: modelData.expires ? i18n("Expires: %1", new Date(modelData.expires).toLocaleString()) : ""
+                    wrapMode: Text.Wrap
                     color: "white"
                     opacity: 0.7
                     font: Kirigami.Theme.smallFont
